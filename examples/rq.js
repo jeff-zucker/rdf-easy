@@ -1,8 +1,5 @@
-const auth = require('solid-auth-cli')   // or anything with a fetch method
-const $rdf = require('rdflib')           // or N3
-
 const RdfEasy = require('../')
-const rdf = new RdfEasy(auth,$rdf)  
+const rdf = new RdfEasy( require('solid-auth-cli'), require('rdflib') )
 
 const profileUrl = "https://jeffz.solid.community/profile/card"
 const storageUrl = "https://jeffz.solid.community/public/Music/"
