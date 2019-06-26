@@ -15,8 +15,8 @@ More details can be seen in the working examples for [node](./examples/node-exam
 ```
   rdf.setPrefixes([{myPrefix:"https://example.com/someOntology"},...])
   await rdf.load( url1, url2, ... )
-  let stringValue  = rdf.value(...)
-  let arrayOfQuads = rdf.query(...)
+  let stringValue  = await rdf.value(...)
+  let arrayOfQuads = await rdf.query(...)
 ```
 ### parameters
 The first parameter of the value and query methods is the URL of a 
