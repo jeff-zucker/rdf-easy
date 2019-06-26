@@ -4,30 +4,25 @@
 
 Documentation for novices coming soon, here's a quick usage summary to start
 
-The best way to start is probably to look at the working examples for
-[node](./examples/node-example.js) and [browser](./examples/browser-example.html).
+More details can be seen in the working examples for [node](./examples/node-example.js) and [browser](./examples/browser-example.html).
 
 ### initialize with rdflib or N3 and an auth/fetch pacakge
 ```
-  const RdfEasy = require('rdf-easy')
-  const rdf = new RdfEasy( require('rdflib'), require('solid-auth-cli') )  
-  OR const rdf = new RdfEasy( require('N3'), require('solid-auth-cli') )  
+  const RdfEasy = require('rdf-easy') 
+  const rdf = new RdfEasy( SolidAuthClient, $rdf )
 ```
-### declare prefixes if needed (most are included transparently)
-### load one or more RDF resources
+### methods
 ```
-  rdf.setPrefixes(["myPrefix","https://example.com/someOntology",...])
+  rdf.setPrefixes([{myPrefix:"https://example.com/someOntology"},...])
   await rdf.load( url1, url2, ... )
-```
-### use query methods
-```
   let stringValue  = rdf.value(...)
   let arrayOfQuads = rdf.query(...)
 ```
-The first parameter of query methods is the URL of a previously loaded 
-resource.  The next parameters are the subject, predicate, object,
-and graph of the quad you wish to search for.  The parts of the quad
-may be :
+### parameters
+The first parameter of the value and query methods is the URL of a 
+previously loaded resource.  The next parameters are the subject, 
+predicate, object, and graph of the quad you wish to search for.
+The parts of the quad may be :
 
   * null or undefined to indicate a wildcard
   * a namedNode 
@@ -35,7 +30,6 @@ may be :
   * a Curly Node (see below)
 
 ### Curly Nodes
-
 A curly node, is a non-standard way to represent namedNodes without having
 to explicitly call $rdf.sym or N3.namedNode on them. It is an associative
 array with the key being a string that references a defined prefix and the
@@ -77,6 +71,8 @@ You can also use the returned quads as imput for another query:
     console.log( rdf.value(folderUrl,files[f].object,{stat:"size"}) )
   }
 ```
+
+That's all for now!
 
 copyright &copy; 2019, Jeff Zucker, may be freely used with an MIT license
 
