@@ -4,6 +4,8 @@
 
 Documentation for novices coming soon, here's a quick usage summary to start
 
+The best way to start is probably to look at the [working example](./examples/rq.js)
+
 ### initialize with rdflib
 ```
   const RdfEasy = require('rdf-easy')
