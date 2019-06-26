@@ -4,24 +4,19 @@
 
 Documentation for novices coming soon, here's a quick usage summary to start
 
-The best way to start is probably to look at the [working example](./examples/rq.js)
+The best way to start is probably to look at the working examples for
+[node](./examples/node-example.js) and [browser](./examples/browser-example.html).
 
-### initialize with rdflib
+### initialize with rdflib or N3 and an auth/fetch pacakge
 ```
   const RdfEasy = require('rdf-easy')
-  const rdf = new RdfEasy( require('rdflib') )  
-```
-### or intitalize with N3 and a fetcher
-```
-  const RdfEasy = require('rdf-easy')
-  const rdf = new RdfEasy( require('N3'), require('solid-auth-cli') )  
+  const rdf = new RdfEasy( require('rdflib'), require('solid-auth-cli') )  
+  OR const rdf = new RdfEasy( require('N3'), require('solid-auth-cli') )  
 ```
 ### declare prefixes if needed (most are included transparently)
-```
-  rdf.setPrefixes(["myPrefix","https://example.com/someOntology",...])
-```
 ### load one or more RDF resources
 ```
+  rdf.setPrefixes(["myPrefix","https://example.com/someOntology",...])
   await rdf.load( url1, url2, ... )
 ```
 ### use query methods
@@ -63,7 +58,7 @@ of the way hashes work.  These are valid prefixes:
 ```
   * a string giving an absolute URL
 ```
-     {"https://example.com/myOntology":"Artist"}
+     {"https://example.com/myOntology/":"Artist"}
 ```
 ### Display the results
 
