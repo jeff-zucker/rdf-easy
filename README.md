@@ -2,9 +2,55 @@
 
 ## easy access to linked data and RDF
 
-Documentation for novices coming soon, here's a quick usage summary to start
+More detailed documentation aimed at novices will be coming soon.
 
-More details can be seen in the working examples for [node](./examples/node-example.js) and [browser](./examples/browser-example.html).
+See also the working examples for [node](./examples/node-example.js) and [browser](./examples/browser-example.html).
+
+# Overview
+
+RDF-Easy may be used in node or the browser. It may be used with rdflib or N3,
+although it doesn't matter if you even know what those are. There are only 
+nine methods.
+```
+  createDocument  creates or replaces an RDF document from current store**
+  readDocuments   loads one or more RDF documents into the current store
+  updateDocument  updates an RDF document, inserting/removing selected items**
+  deleteDocuments deletes one or more RDF documents
+
+  value           queries the current store, returns a single value as string
+  query           queries the current store, returns zero or more statements
+  add             adds one or more statements to the current store**
+  remove          removes one or more statements from the current store**
+
+  setPrefix       associates a prefix with an ontolgoy (many are pre-loaded)
+```
+Statements may be expressed as named nodes, or using curly nodes, a hash
+object with the key being a predfined prefix and the value being a term:
+```
+  {foaf:"knows"} ... {ldp:"contains"} ... {stat:"size"}
+```
+A special prefix "thisDoc" refers to the currently loaded document:
+```
+  {thisDoc:""}    // the document itself
+  {thisDoc:"me"}  // the document fragment named "me"
+```
+Some query examples using curly nodes:
+```
+  name    = await rdf.value( profileUrl, {thisDoc:"me"}  , {foaf:"name"} )
+  friends = await rdf.query( profileUrl, {thisDoc:"me"}  , {foaf:"knows"} )
+  files   = await rdf.query( folderUrl , {thisDoc:""}    , {ldp:"contains"} )
+  size    = await rdf.value( folderUrl , files[0].object , {stat:"size"} )
+
+  AfricanWomenMusicians = await rdf.query( musiciansUrl, [
+     [ null, {rdfs"type"}     , {mo:"MusicArtist"} ],
+     [ null, {geo:"region"}   , "Africa"           ],
+     [ null, {demog:"gender"} , "female"           ]
+  ])
+```
+Note that the last two examples use the results of one query as input for 
+other queries.
+
+## Methods
 
 ### initialize with rdflib or N3 and an auth/fetch pacakge
 ```
