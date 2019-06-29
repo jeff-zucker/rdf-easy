@@ -18,7 +18,7 @@ async function main(){
     <> :about "stuff".
   `)
   console.log( await rdf.value( newDoc,
-    `SELECT ?x WHERE { <thisDoc> :about ?x. }`
+    `SELECT ?x WHERE { <> :about ?x. }`
   ) )
 
   await rdf.update( newDoc, `
@@ -26,7 +26,7 @@ async function main(){
     INSERT DATA { <> :about "RDF". }
   `)
   console.log( await rdf.value( newDoc,
-    `SELECT ?x WHERE { <thisDoc> :about ?x. }`
+    `SELECT ?x WHERE { <> :about ?x. }`
   ) )
 
 
@@ -44,7 +44,7 @@ async function main(){
   // log the urls and sizes of all files in a container
   //
   let files = await rdf.query( container, `SELECT ?url ?size WHERE { 
-    <thisDoc> ldp:contains ?url. 
+    <> ldp:contains ?url. 
     ?url stat:size ?size.
   }`)
   for(var f of files){ console.log(f.url,f.size) }
@@ -61,7 +61,7 @@ async function main(){
   //     note : linkr:acl and linkr:describedBy give a resource's Links
   //
   let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
-    <thisDoc> linkr:acl ?aclDoc.
+    <> linkr:acl ?aclDoc.
   }`)
   let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
      ?auth acl:mode acl:Write.

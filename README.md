@@ -19,7 +19,7 @@ fetchers, stores, and other complexities are conveniently back stage.
 - **log the URLs and sizes of all files in a container**
 ```
   let files = await rdf.query( container, `SELECT ?url ?size WHERE {
-    <thisDoc> ldp:contains ?url. 
+    <> ldp:contains ?url. 
     ?url stat:size ?size.
   }`)
   for(var f of files){ console.log(f.url,f.size) }
@@ -29,7 +29,7 @@ fetchers, stores, and other complexities are conveniently back stage.
   // Note : linkr:acl and linkr:describedBy give a resource's Links
 
   let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
-    <thisDoc> linkr:acl ?aclDoc.
+    <> linkr:acl ?aclDoc.
   }`)
   let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
      ?auth acl:mode acl:Write.

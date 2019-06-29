@@ -58,7 +58,7 @@ class SolidSpark {
 
   _prepSparql(source,sparql){
     if(!sparql) sparql = "SELECT * WHERE {?subject ?predicate ?object.}"
-    sparql=sparql.replace(/\<thisDoc\>/,"<"+source+">")
+    sparql=sparql.replace(/\<\>/,"<"+source+">")
     return `PREFIX : <${source}#>\n` + this._prefixStr + sparql
   }
 
