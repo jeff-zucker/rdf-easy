@@ -24,9 +24,13 @@ fetchers, stores, and other complexities are conveniently back stage.
   }`)
   for(var f of files){ console.log(f.url,f.size) }
 ```
-- **log all agents with write access to a given URL**
+- **log all agents with write access to a given url**
+Note : linkr:acl and linkr:describedBy give a resource's Links
 ```
-  let agents = await rdf.query( sampleAcl, `SELECT ?agentName WHERE { 
+  let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
+    <thisDoc> linkr:acl ?aclDoc.
+  }`)
+  let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
      ?auth acl:mode acl:Write.
      ?auth acl:agent ?agentName.
   }`)
