@@ -5,11 +5,11 @@
 All of the heavy lifting is done by rdflib, but prefixes, named nodes,
 fetchers, stores, and other complexities are conveniently back stage.
 
-- invoking & initializing
+- **invoking & initializing**
 ```
-const auth=require('solid-auth-cli') // or browser equivalent
-const SolidRdf = require('../src')   // or browser equivalent
-const rdf = new SolidRdf(auth)
+  const auth=require('solid-auth-cli') // or browser equivalent
+  const SolidRdf = require('../src')   // or browser equivalent
+  const rdf = new SolidRdf(auth)
 ```
 - **log the name of the owner of a profile document**
 ```
