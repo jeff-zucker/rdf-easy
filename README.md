@@ -32,27 +32,6 @@ fetchers, stores, and other complexities are conveniently back stage.
   }`)
   for(var a of agents){ console.log(a.agentName) }
 ```
-=======
-## easy & practical access to RDF linked data
-
-- **log the name of the owner of a profile document**
-```
-  console.log( 
-    await rdf.value(profile,`SELECT ?name WHERE { :me foaf:name ?name. }`) 
-  )
-```
-- **log all triples in a profile document (or any RDF document)**
-```
-  let all_triples = await rdf.query( profile )
-  for(var t of all_triples){ console.log(t.subject,t.predicate,t.object) }
-```
-- **log the urls and sizes of all files in a container**
-```
-  let files = await rdf.query( container,
-    `SELECT ?url ?size WHERE { <thisDoc> ldp:contains ?url. ?url stat:size ?size.}`
-  )
-  for(var f of files){ console.log(f.url,f.size) }
-```
 - **log trusted apps and their modes**
 ```
   let apps = await rdf.query( profile, `SELECT ?appName ?appMode WHERE { 
