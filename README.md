@@ -11,21 +11,21 @@ fetchers, stores, and other complexities are conveniently back stage.
     await rdf.value(profile,`SELECT ?name WHERE { :me foaf:name ?name. }`) 
   )
 ```
-- **log all triples in a profile document (or any RDF document)**
+- **log all statements in any RDF document**
 ```
-  let all_triples = await rdf.query( profile )
-  for(var t of all_triples){ console.log(t.subject,t.predicate,t.object) }
+  let statements = await rdf.query( anyRDF )
+  for(var s of statements){ console.log(s.subject,s.predicate,s.object) }
 ```
-- **log the urls and sizes of all files in a container**
+- **log the URLs and sizes of all files in a container**
 ```
-  let files = await rdf.query( container,
-    `SELECT ?url ?size WHERE { <thisDoc> ldp:contains ?url. ?url stat:size ?size.}`
-  )
+  let files = await rdf.query( container, `SELECT ?url ?size WHERE {
+    <thisDoc> ldp:contains ?url. 
+    ?url stat:size ?size.
+  }`)
   for(var f of files){ console.log(f.url,f.size) }
 ```
-- **log all agents with write access to a given url**
+- **log all agents with write access to a given URL**
 ```
-  await auth.login()
   let agents = await rdf.query( sampleAcl, `SELECT ?agentName WHERE { 
      ?auth acl:mode acl:Write.
      ?auth acl:agent ?agentName.
