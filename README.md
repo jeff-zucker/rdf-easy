@@ -5,6 +5,12 @@
 All of the heavy lifting is done by rdflib, but prefixes, named nodes,
 fetchers, stores, and other complexities are conveniently back stage.
 
+- invoking & initializing
+```
+const auth=require('solid-auth-cli') // or browser equivalent
+const SolidRdf = require('../src')   // or browser equivalent
+const rdf = new SolidRdf(auth)
+```
 - **log the name of the owner of a profile document**
 ```
   console.log( 
@@ -69,3 +75,4 @@ fetchers, stores, and other complexities are conveniently back stage.
     INSERT DATA { <> :about "RDF". }
   `)
 ```
+&copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
