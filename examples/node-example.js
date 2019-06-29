@@ -1,40 +1,83 @@
-const RdfEasy = require('../')
-const rdf = new RdfEasy( require('solid-auth-cli'), require('rdflib') )
+const auth=require('solid-auth-cli')
+const SolidRdf = require('../src')
+const rdf = new SolidRdf(auth)
 
-const profileUrl = "https://jeffz.solid.community/profile/card"
-const storageUrl = "https://jeffz.solid.community/public/Music/"
+const account      = "https://jeffz.solid.community"
+const profile      = account + "/profile/card"
+const container    = account + "/public/Music/"
+const worldArtists = "file://"+process.cwd()+"/examples/artists.ttl"
+const givenUrl     = account + "/public/"
+const newDoc       = account + "/public/test/newDoc.ttl"
 
 async function main(){
-  await rdf.load( profileUrl, storageUrl )
-  let name    = await rdf.value( profileUrl, {thisDoc:"me"} ,{foaf:"name"} )
-  let friends = await rdf.query( profileUrl, {thisDoc:"me"} ,{foaf:"knows"} )
-  let files   = await rdf.query( storageUrl, {thisDoc:""}   ,{ldp:"contains"} )
-  let size    = await rdf.value( storageUrl, files[0].object,{stat:"size"} )
-  // or, for example
-  // rdf.setPrefix("mo","http://purl.org/ontology/mo/") ... {mo:"MusicArtist"} 
-  // or just {"http://purl.org/ontology/mo/":"MusicArtist"} 
-  display(name,friends,files,size)
-}
 
-async function display(name,friends,files,size){
-  for(var f in friends){ 
-    let friendsName=await rdf.value(profileUrl,friends[f].object,{foaf:"name"})
-    console.log(`${name} knows ${friendsName}`)
-  }
-  for(var f in files) {
-    console.log(`storage includes <${files[f].object.value}>`)
-  }
-  console.log(`The first storage item is ${size} bytes long.`)
+  await auth.login()  
+
+  await rdf.createOrReplace( newDoc, `
+    @prefix : <#>.
+    <> :about "stuff".
+  `)
+  console.log( await rdf.value( newDoc,
+    `SELECT ?x WHERE { <thisDoc> :about ?x. }`
+  ) )
+
+  await rdf.update( newDoc, `
+    DELETE DATA { <> :about "stuff". }
+    INSERT DATA { <> :about "RDF". }
+  `)
+  console.log( await rdf.value( newDoc,
+    `SELECT ?x WHERE { <thisDoc> :about ?x. }`
+  ) )
+
+
+  // log the name of the owner of a profile document
+  //
+  console.log( 
+    await rdf.value(profile,`SELECT ?name WHERE { :me foaf:name ?name. }`) 
+  )
+
+  // log all triples in a profile document (or any document)
+  //
+  let all_triples = await rdf.query( profile )
+  //  for(var t of all_triples){ console.log(t.subject,t.predicate,t.object) }
+
+  // log the urls and sizes of all files in a container
+  //
+  let files = await rdf.query( container, `SELECT ?url ?size WHERE { 
+    <thisDoc> ldp:contains ?url. 
+    ?url stat:size ?size.
+  }`)
+  for(var f of files){ console.log(f.url,f.size) }
+
+  // log trusted apps and their modes
+  //
+  let apps = await rdf.query( profile, `SELECT ?appName ?appMode WHERE { 
+     ?app acl:origin ?appName. 
+     ?app acl:mode ?appMode.
+  }`)
+  for(var a of apps){ console.log(a.appName,a.appMode) }
+
+  // log all agents with write access to a given url
+  //     note : linkr:acl and linkr:describedBy give a resource's Links
+  //
+  let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
+    <thisDoc> linkr:acl ?aclDoc.
+  }`)
+  let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
+     ?auth acl:mode acl:Write.
+     ?auth acl:agent ?agentName.
+  }`)
+  for(var a of agents){ console.log(a.agentName) }
+
+  // log names of African Women Musicans from a list of world artists
+  //
+  let artists = await rdf.query( worldArtists, `SELECT ?name WHERE { 
+     ?artist mo:origin "Africa".
+     ?artist schema:gender "female".
+     ?artist rdfs:type mo:MusicArtist.
+     ?artist rdfs:label ?name.
+  }`)
+  for(var a of artists){ console.log(a.name) }
+
 }
 main()
-
-/* OUTPUT IS :
-
-Jeff Zucker knows Ib Mubarak
-Jeff Zucker knows Tyler Spades
-storage includes <https://jeffz.solid.community/public/Music/Ambient/>
-storage includes <https://jeffz.solid.community/public/Music/db/>
-storage includes <https://jeffz.solid.community/public/Music/playlists.ttl>
-The first storage item is 4096 bytes long.
-
-*/

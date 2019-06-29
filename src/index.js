@@ -1,108 +1,102 @@
-"use strict"
+const $rdf = require('rdflib')
 
-class RdfEasy {
+class SolidSpark {
 
-  constructor(auth,engine) {
-    this._fetch = auth.fetch
-    this._engine = engine
-    if( Object.keys(engine).length>30 ) this.rdflib = true
-    else this.N3 = true
-    if(this.N3) {
-      const { DataFactory } = engine;
-      const { namedNode, literal, defaultGraph, quad } = DataFactory;
-      this.namedNode = namedNode
-      this.literal = literal
-      this.parser = new engine.Parser()
-      this.store  = new engine.Store()
+  constructor(auth){
+    this._prefixStr = this._getPrefixes()
+    this._auth = auth
+  }
+
+  async query(dataUrl,sparqlStr){
+    sparqlStr = this._prepSparql(dataUrl,sparqlStr)
+    return await this._runQuery( dataUrl, sparqlStr, "array" )
+  }
+  async value(source,sparql){
+    sparql = this._prepSparql(source,sparql)
+    return await this._runQuery( source, sparql, "value" )
+  }
+
+  async _runQuery(dataUrl,sparqlStr,outputFormat){
+    await this._load(dataUrl)
+    let results = await this._execute(sparqlStr)
+    if(outputFormat.match(/array/i)){ return results }
+    else if(outputFormat.match(/value/i)) {
+       let key = ( Object.keys(results[0])[0]  )
+       return( results[0][key] )
     }
-    else {
-      this.store   = engine.graph()
-      this.fetcher = engine.fetcher(this.store,{fetch:auth.fetch})
-      this.namedNode = this.store.sym
-    }
   }
 
-  setPrefix(prefix,url){
-    if(prefix.contains(/(id|termType|thisDoc)/))
-      throw `${prefix} is reserved, choose another prefix`
-    this.prefix[prefix]=url
-  }
-  getPrefix(prefix){
-    return this.prefix[prefix]
-  }
+  async _execute(sparql){ 
+    let self = this
+    return new Promise(async(resolve, reject)=>{
+    let preparedQuery = $rdf.SPARQLToQuery(sparql,false,self._store)
+    let wanted = preparedQuery.vars
+    let resultAry = []
+    self._store.query(preparedQuery, async(results) =>  {
+      if(typeof(results)==="undefined") { reject("No results.") }
+      let row = await this._rowHandler(wanted,results) 
+      if(row) resultAry.push(row)
+    }, {} , function(){return resolve(resultAry)} )
+  })
+}
 
-  async query( source,s,p,o,g ){
-    if(!g) g = this.namedNode(source)
-    [s,p,o,g]=[s,p,o,g].map( term => {
-      if(typeof term==="object" && term){
-        if(term.id) return term          // already an N3 namedNode
-        if(term.termType) return term    // already an rdflib namedNode
-        let prefix = Object.keys(term)   // a hash to munge into a namedNode
-        let value = term[prefix]
-        if(prefix=="thisDoc") {
-          if(value) return this.namedNode(source+"#"+value) 
-          else return this.namedNode(source) 
+  async _rowHandler(wanted,results){
+    let row = {}
+    for(var r in results){
+      let found = false
+      let got = r.replace(/^\?/,'')
+      if(wanted.length){
+        for(var w in wanted){
+          if(got===wanted[w].label){ found=true; continue }
         }
-        if(this.prefix[prefix]) return this.namedNode( this.prefix[prefix]+value )
-        return this.namedNode( prefix + value )
-      }
-      if(typeof term !="undefined") return this.literal(term)  // literal
-      return term                                         // undefined or null
-    })
-    if(this.N3)
-      return await this.store.getQuads(g[0],g[1],g[2],g[3])
-    else 
-      return await this.store.match(g[0],g[1],g[2],g[3])
-  }
-
-  async value( url, s,p,o,g ) {
-    let matches = await this.query(url,s,p,o,g)
-    if(matches.length===0) return ""
-    matches = matches[0]
-    if(typeof s==="undefined") return matches.subject.value
-    if(typeof p==="undefined") return matches.predicate.value
-    if(typeof o==="undefined") return matches.object.value
-  }
-
-  async load(...urls) {
-    for(let u=0;u<urls.length;u++){
-      let url = urls[u]
-      if(this.N3) {
-        const res = await this._fetch(url)
-        if(!res.ok) throw res
-        const string = await res.text()
-        await this._load(string, url)
-      }
-      else {
-        await this.fetcher.load(url)
-      }
+        if(!found) continue
+      } 
+      row[got]=results[r].value
     }
+    return(row)
   }
 
-  async _load(string,url){
-      let quads =  await this._parse(string,url)
-      this.store.addQuads(quads)
-      return (this.store)
+  _prepSparql(source,sparql){
+    if(!sparql) sparql = "SELECT * WHERE {?subject ?predicate ?object.}"
+    sparql=sparql.replace(/\<thisDoc\>/,"<"+source+">")
+    return `PREFIX : <${source}#>\n` + this._prefixStr + sparql
   }
 
-  async _parse(string,url){
-    let store =[]
-    const parser = new this._engine.Parser({ baseIRI: url });
-    return new Promise( async(resolve)=>{
-      parser.parse( string, (err, quad, prefixes) => {
-        if(err) throw err
-        if(quad) {
-           store.push(quad)        
-        }
-        resolve(store)
+  async _load(url){
+    this._store = $rdf.graph()
+    this._fetcher = $rdf.fetcher(this._store,{fetch:this._auth.fetch})
+    await this._fetcher.load(url)
+  }
+
+  async createOrReplace(url,turtle,rdfType="text/turtle"){
+    try {
+      await this._auth.fetch(url,{
+         method: "PUT",
+           body: turtle,
+        headers: {"Content-Type": rdfType}
       })
-    })
+    } catch (err) {
+       throw err
+    }
   }
 
-/**
- *  lifted from solid-namespace package
- */
- prefix = {
+  async update(url,sparql){
+    try {
+      return await this._auth.fetch(url,{
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/sparql-update' },
+        body: sparql
+      })
+    } catch (err) {
+       throw err
+    }
+  }
+
+ /**
+  *  lifted from solid-namespace package
+  */
+ _getPrefixes(){
+  let aliases = {
   acl: 'http://www.w3.org/ns/auth/acl#',
   arg: 'http://www.w3.org/ns/pim/arg#',
   cal: 'http://www.w3.org/2002/12/cal/ical#',
@@ -128,7 +122,7 @@ class RdfEasy {
   rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
   rss: 'http://purl.org/rss/1.0/',
   sched: 'http://www.w3.org/ns/pim/schedule#',
-  schema: 'http:/schema.org/', // @@ beware confusion with documents no 303
+  schema: 'http://schema.org/', // @@ beware confusion with documents no 303
   sioc: 'http://rdfs.org/sioc/ns#',
   solid: 'http://www.w3.org/ns/solid/terms#',
   space: 'http://www.w3.org/ns/pim/space#',
@@ -138,12 +132,17 @@ class RdfEasy {
   ui: 'http://www.w3.org/ns/ui#',
   vcard: 'http://www.w3.org/2006/vcard/ns#',
   wf: 'http://www.w3.org/2005/01/wf/flow#',
-  xsd: 'http://www.w3.org/2001/XMLSchema#'
+  xsd: 'http://www.w3.org/2001/XMLSchema#',
+  linkr: 'http://www.iana.org/assignments/link-relations/'
+}
+  let prefixStr=""
+  for(var a in aliases){
+    prefixStr = prefixStr+`PREFIX ${a}: <${aliases[a]}>\n`
+  }
+  return prefixStr
+}
+
 }
 
 
-}
-if(typeof window === "undefined")
-// module.exports.RdfEasy = RdfEasy  ... this means const {RE} = require('re')
-module.exports = RdfEasy          // ... this means const RE = require('re')
-
+module.exports = SolidSpark

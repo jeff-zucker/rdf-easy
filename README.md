@@ -2,7 +2,7 @@
 
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
-All of the heavy lifting is done by rdblib, but prefixes, named nodes,
+All of the heavy lifting is done by rdflib, but prefixes, named nodes,
 fetchers, stores, and other complexities are conveniently back stage.
 
 - **log the name of the owner of a profile document**
@@ -54,4 +54,18 @@ fetchers, stores, and other complexities are conveniently back stage.
      ?artist rdfs:label ?name.
   }`)
   for(var a of artists){ console.log(a.name) }
+```
+- **create an RDF document** (send a Turtle string)
+```
+  await rdf.createOrReplace( newDoc, `
+    @prefix : <#>
+    <> :about "stuff".
+  `)
+```
+- **update an RDF document**
+```
+  await rdf.update( newDoc, `
+    DELETE DATA { <> :about "stuff". }
+    INSERT DATA { <> :about "RDF". }
+  `)
 ```

@@ -1,7 +1,7 @@
 {
   "name": "rdf-easy",
   "version": "0.0.1",
-  "description": "easy access to linked data and RDF",
+  "description": "easy & practical access to RDF linked data from Solid pods & other sources",
   "author": "Jeff Zucker",
   "license": "MIT",
   "keywords": [
@@ -10,11 +10,10 @@
     "semantic web"
   ],
   "dependencies": {
-    "solid-namespace": "^0.2.0"
+    "rdflib": "^0.20.1",
   },
   "devDependencies": {
-    "n3": "^1.1.1",
-    "rdflib": "^0.20.0",
+    "concat-stream": "^2.0.0",
     "solid-auth-cli": "^1.0.7"
   },
   "scripts": {
