@@ -53,9 +53,11 @@ sight.
 ```javascript
   // Note : linkr:acl and linkr:describedBy give a resource's Links
 
-  let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
-    <> linkr:acl ?aclDoc.
-  }`)
+  let aclDoc = await rdf.value( givenUrl,`
+    SELECT ?aclDoc WHERE { 
+      <> linkr:acl ?aclDoc.
+    }
+  `)
   let agents = await rdf.query( aclDoc, `
     SELECT ?agentName WHERE { 
       ?auth acl:mode  acl:Write;
