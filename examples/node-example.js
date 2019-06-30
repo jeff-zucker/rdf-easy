@@ -43,7 +43,7 @@ async function main(){
   let artists = await rdf.query( worldArtists, `SELECT ?name WHERE { 
      ?artist mo:origin     "Africa"; 
              schema:gender "female";
-             rdfs:type     mo:MusicArtist;
+             rdf:type      mo:MusicArtist;
              rdfs:label    ?name.
   }`)
   for(var a of artists){ console.log(a.name) }
