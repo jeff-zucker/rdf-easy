@@ -35,17 +35,17 @@ sight.
 - **find everything about a given subject in an RDF document**
 ```javascript
   let about = await rdf.query( anyRDF, `
-    SELECT ?property ?value WHERE { :anySubject ?property ?value. }
+      SELECT ?property ?value WHERE { :anySubject ?property ?value. }
   `)
   for(var a of about){ console.log(a.property,a.value) }
 ```
 - **find the URLs and sizes of all files in a container**
 ```javascript
   let files = await rdf.query( container, `
-    SELECT ?url ?size WHERE {
-      <> ldp:contains ?url. 
-      ?url stat:size ?size.
-    }
+      SELECT ?url ?size WHERE {
+          <> ldp:contains ?url. 
+          ?url stat:size ?size.
+      }
   `)
   for(var f of files){ console.log(f.url,f.size) }
 ```
@@ -54,52 +54,52 @@ sight.
   // Note : linkr:acl and linkr:describedBy give a resource's Links
 
   let aclDoc = await rdf.value( givenUrl,`
-    SELECT ?aclDoc WHERE { 
-      <> linkr:acl ?aclDoc.
-    }
+      SELECT ?aclDoc WHERE { 
+          <> linkr:acl ?aclDoc.
+      }
   `)
   let agents = await rdf.query( aclDoc, `
-    SELECT ?agentName WHERE { 
-      ?auth acl:mode  acl:Write;
-            acl:agent ?agentName.
-    }
+      SELECT ?agentName WHERE { 
+          ?auth acl:mode  acl:Write;
+                acl:agent ?agentName.
+      }
   `)
   for(var a of agents){ console.log(a.agentName) }
 ```
 - **find trusted apps and their modes**
 ```javascript
   let apps = await rdf.query( profile, `
-    SELECT ?appName ?appMode WHERE { 
-      ?app acl:origin ?appName;
-           acl:mode   ?appMode.
-    }
+      SELECT ?appName ?appMode WHERE { 
+          ?app acl:origin ?appName;
+               acl:mode   ?appMode.
+      }
   `)
   for(var a of apps){ console.log(a.appName,a.appMode) }
 ```
 - **find African Women Musicans in a list of world artists**
 ```javascript
   let artists = await rdf.query( worldArtists, `
-    SELECT ?name WHERE { 
-      ?artist mo:origin     "Africa"; 
-              schema:gender "female";
-              rdf:type      mo:MusicArtist;
-              rdfs:label    ?name.
-    }
+      SELECT ?name WHERE { 
+          ?artist mo:origin     "Africa"; 
+                  schema:gender "female";
+                  rdf:type      mo:MusicArtist;
+                  rdfs:label    ?name.
+      }
   `)
   for(var a of artists){ console.log(a.name) }
 ```
 - **create an RDF document** (send a Turtle string)
 ```javascript
   await rdf.createOrReplace( newDoc, `
-    @prefix : <#>
-    <> :about "stuff".
+      @prefix : <#>
+      <> :about "stuff".
   `)
 ```
 - **update an RDF document**
 ```javascript
   await rdf.update( newDoc, `
-    DELETE DATA { <> :about "stuff". }
-    INSERT DATA { <> :about "RDF". }
+      DELETE DATA { <> :about "stuff". }
+      INSERT DATA { <> :about "RDF". }
   `)
 ```
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
