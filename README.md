@@ -6,7 +6,7 @@ All of the heavy lifting is done by rdflib, but prefixes, named nodes,
 fetchers, stores, and other complexities are conveniently tucked out of
 sight.
 
-There are four methods:
+## Methods (<i>there are only four</i>):
 ```
    find a single value in an RDF resource  : rdf.value()
    find multiple values in an RDF resource : rdf.query()
