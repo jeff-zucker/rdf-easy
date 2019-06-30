@@ -1,4 +1,4 @@
-# RDF-easy
+# RDF easy
 
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
