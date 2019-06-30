@@ -32,6 +32,13 @@ sight.
   let statements = await rdf.query( anyRDF )
   for(var s of statements){ console.log(s.subject,s.predicate,s.object) }
 ```
+- **find everything about a given subject in an RDF document**
+```javascript
+  let about = await rdf.query( anyRDF, `SELECT ?property ?value WHERE { 
+    :anySubject ?property ?value.  
+  }`)
+  for(var a of about){ console.log(a.property,a.value) }
+```
 - **find the URLs and sizes of all files in a container**
 ```javascript
   let files = await rdf.query( container, `SELECT ?url ?size WHERE {
