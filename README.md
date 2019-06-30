@@ -10,9 +10,7 @@ there are many possibilities.
 
 Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
 daunting than rdflib and closer to the RDF bone (for the user) than 
-[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead
-or in addition (see below on reusing the store).  If you prefer Javascript
-objects to SPARQL, use query-ldflex instead.
+[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see "tips for advanced users" below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
 
 ## Methods (<i>there are only four</i>):
 ```
@@ -110,4 +108,33 @@ objects to SPARQL, use query-ldflex instead.
       INSERT DATA { <> :about "RDF". }
   `)
 ```
+## Tips for advanced users
+
+### quads
+
+Everything shown above with triples can be used with quads, I just didn't
+mention that, so as not to confuse beginners.
+
+### additional namespaces
+
+Many of the common namespaces (foaf,ldp,etc.) are included by default and
+you do not need to define them in your queries.  If you have a custom 
+namespace, either add it to the SPARQL with a standard PREFIX declaration,
+or use <full-url-of-namespace-and-term> in your SPARQL.
+
+### working with RDF formats other than Turtle
+
+If you wish to create resources in n3, RDF/XML, etc. you may pass a
+content-type tag as the third parameter of createOrReplace()
+
+### querying multiple sources at once
+
+Instead of passing a single URL to the query and value methods, you
+may pass an array of URLs all of which will be added to the store.
+
+### reusing the store
+
+The rdflib store object is used behind the scenes, but if you need it
+or its methods, you can access it with rdf.store.
+
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
