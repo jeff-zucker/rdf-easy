@@ -13,13 +13,14 @@ There are four methods:
    create an RDF resource                  : rdf.createOrReplace()
    modify an RDF resource                  : rdf.update()
 ```
-- **invoking & initializing**
+## Invoking & initializing
 ```javascript
   const auth    = require('solid-auth-cli') // or browser equivalent
   const RDFeasy = require('rdf-easy')       // or browser equivalent
 
   const rdf = new RDFeasy(auth)
 ```
+## Some examples
 - **find the name of the owner of a profile document**
 ```javascript
   console.log( 
