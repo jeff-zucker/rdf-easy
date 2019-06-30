@@ -21,7 +21,7 @@ There are four methods:
   const rdf = new RDFeasy(auth)
 ```
 - **find the name of the owner of a profile document**
-```
+```javascript
   console.log( 
     await rdf.value(profile,`SELECT ?name WHERE { :me foaf:name ?name. }`) 
   )
@@ -38,9 +38,9 @@ There are four methods:
     ?url stat:size ?size.
   }`)
   for(var f of files){ console.log(f.url,f.size) }
-```javascript
-- **find all agents with write access to a given url**
 ```
+- **find all agents with write access to a given url**
+```javascript
   // Note : linkr:acl and linkr:describedBy give a resource's Links
 
   let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
