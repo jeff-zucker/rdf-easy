@@ -1,6 +1,6 @@
 const auth=require('solid-auth-cli')
-const SolidRdf = require('../src')
-const rdf = new SolidRdf(auth)
+const RDFeasy = require('../src')
+const rdf = new RDFeasy(auth)
 
 const account      = "https://jeffz.solid.community"
 const profile      = account + "/profile/card"

@@ -1,6 +1,6 @@
 const $rdf = require('rdflib')
 
-class SolidSpark {
+class RDFeasy {
 
   constructor(auth){
     this._prefixStr = this._getPrefixes()
@@ -145,4 +145,4 @@ class SolidSpark {
 }
 
 
-module.exports = SolidSpark
+module.exports = RDFeasy
