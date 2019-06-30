@@ -2,16 +2,25 @@
 
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
-All of the heavy lifting is done by rdflib, but prefixes, named nodes,
-fetchers, stores, and other complexities are conveniently tucked out of
-sight.
+Here's how it works :  You create, modify, and query RDF resources using 
+Turtle and SPARQL and get back either a single value or a straightforward 
+Javascript array of hashes.  You don't need to know much about Turtle and 
+SPARQL for it to be useful for many common tasks. And if you do know them, 
+there are many possibilities.  
+
+Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
+daunting than rdflib and closer to the RDF bone (for the user) than 
+query-ldflex.  If you need really heavy lifting, use rdflib instead
+or in addition (see below on reusing the store).  If you prefer Javascript
+objects to SPARQL, use [query-ldflex](https://github.com/solid/query-ldflex)
+instead.
 
 ## Methods (<i>there are only four</i>):
 ```
-   find a single value in an RDF resource  : rdf.value()
+    find a single value in an RDF resource : rdf.value()
    find multiple values in an RDF resource : rdf.query()
-   create an RDF resource                  : rdf.createOrReplace()
-   modify an RDF resource                  : rdf.update()
+                    create an RDF resource : rdf.createOrReplace()
+                    modify an RDF resource : rdf.update()
 ```
 ## Invoking & initializing
 ```javascript
@@ -51,12 +60,10 @@ sight.
 ```
 - **find all agents with write access to a given url**
 ```javascript
-  // Note : linkr:acl and linkr:describedBy give a resource's Links
-
+  // Note : the link header of a document becomes part of its results
+  // It can be retrieved by querying for linkr:acl and linkr:describedBy
   let aclDoc = await rdf.value( givenUrl,`
-      SELECT ?aclDoc WHERE { 
-          <> linkr:acl ?aclDoc.
-      }
+      SELECT ?aclDoc WHERE { <> linkr:acl ?aclDoc. }
   `)
   let agents = await rdf.query( aclDoc, `
       SELECT ?agentName WHERE { 
