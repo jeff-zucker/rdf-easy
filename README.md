@@ -60,7 +60,9 @@ objects to SPARQL, use query-ldflex instead.
 - **find all agents with write access to a given url**
 ```javascript
   // Note : the link header of a document becomes part of its results
-  // It can be retrieved by querying for linkr:acl and linkr:describedBy
+  // using the IANA link-relations vocabulary (prefix linkr).
+  // Links can be retrieved by querying for linkr:acl and linkr:describedBy
+  //
   let aclDoc = await rdf.value( givenUrl,`
       SELECT ?aclDoc WHERE { <> linkr:acl ?aclDoc. }
   `)
