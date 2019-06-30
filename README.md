@@ -3,26 +3,35 @@
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
 All of the heavy lifting is done by rdflib, but prefixes, named nodes,
-fetchers, stores, and other complexities are conveniently back stage.
+fetchers, stores, and other complexities are conveniently tucked out of
+sight.
+
+There are four methods:
+
+   find a single value in an RDF resource  : rdf.value()
+   find multiple values in an RDF resource : rdf.query()
+   create an RDF resource                  : rdf.createOrReplace()
+   modify an RDF resource                  : rdf.update()
 
 - **invoking & initializing**
 ```
-  const auth=require('solid-auth-cli') // or browser equivalent
-  const SolidRdf = require('rdf-easy')   // or browser equivalent
-  const rdf = new SolidRdf(auth)
+  const auth    = require('solid-auth-cli') // or browser equivalent
+  const RDFeasy = require('rdf-easy')       // or browser equivalent
+
+  const rdf = new RDFeasy(auth)
 ```
-- **log the name of the owner of a profile document**
+- **find the name of the owner of a profile document**
 ```
   console.log( 
     await rdf.value(profile,`SELECT ?name WHERE { :me foaf:name ?name. }`) 
   )
 ```
-- **log all statements in any RDF document**
+- **find all statements in any RDF document**
 ```
   let statements = await rdf.query( anyRDF )
   for(var s of statements){ console.log(s.subject,s.predicate,s.object) }
 ```
-- **log the URLs and sizes of all files in a container**
+- **find the URLs and sizes of all files in a container**
 ```
   let files = await rdf.query( container, `SELECT ?url ?size WHERE {
     <> ldp:contains ?url. 
@@ -30,7 +39,7 @@ fetchers, stores, and other complexities are conveniently back stage.
   }`)
   for(var f of files){ console.log(f.url,f.size) }
 ```
-- **log all agents with write access to a given url**
+- **find all agents with write access to a given url**
 ```
   // Note : linkr:acl and linkr:describedBy give a resource's Links
 
@@ -43,7 +52,7 @@ fetchers, stores, and other complexities are conveniently back stage.
   }`)
   for(var a of agents){ console.log(a.agentName) }
 ```
-- **log trusted apps and their modes**
+- **find trusted apps and their modes**
 ```
   let apps = await rdf.query( profile, `SELECT ?appName ?appMode WHERE { 
      ?app acl:origin ?appName. 
@@ -54,10 +63,10 @@ fetchers, stores, and other complexities are conveniently back stage.
 - **find African Women Musicans in a list of world artists**
 ```
   let artists = await rdf.query( worldArtists, `SELECT ?name WHERE { 
-     ?artist mo:origin "Africa".
-     ?artist schema:gender "female".
-     ?artist rdfs:type mo:MusicArtist.
-     ?artist rdfs:label ?name.
+     ?artist mo:origin     "Africa"; 
+             schema:gender "female";
+             rdfs:type     mo:MusicArtist;
+             rdfs:label    ?name.
   }`)
   for(var a of artists){ console.log(a.name) }
 ```

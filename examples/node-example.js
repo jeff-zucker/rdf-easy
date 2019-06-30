@@ -11,25 +11,6 @@ const newDoc       = account + "/public/test/newDoc.ttl"
 
 async function main(){
 
-  await auth.login()  
-
-  await rdf.createOrReplace( newDoc, `
-    @prefix : <#>.
-    <> :about "stuff".
-  `)
-  console.log( await rdf.value( newDoc,
-    `SELECT ?x WHERE { <> :about ?x. }`
-  ) )
-
-  await rdf.update( newDoc, `
-    DELETE DATA { <> :about "stuff". }
-    INSERT DATA { <> :about "RDF". }
-  `)
-  console.log( await rdf.value( newDoc,
-    `SELECT ?x WHERE { <> :about ?x. }`
-  ) )
-
-
   // log the name of the owner of a profile document
   //
   console.log( 
@@ -57,25 +38,13 @@ async function main(){
   }`)
   for(var a of apps){ console.log(a.appName,a.appMode) }
 
-  // log all agents with write access to a given url
-  //     note : linkr:acl and linkr:describedBy give a resource's Links
-  //
-  let aclDoc = await rdf.value( givenUrl,`SELECT ?aclDoc WHERE { 
-    <> linkr:acl ?aclDoc.
-  }`)
-  let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
-     ?auth acl:mode acl:Write.
-     ?auth acl:agent ?agentName.
-  }`)
-  for(var a of agents){ console.log(a.agentName) }
-
   // log names of African Women Musicans from a list of world artists
   //
   let artists = await rdf.query( worldArtists, `SELECT ?name WHERE { 
-     ?artist mo:origin "Africa".
-     ?artist schema:gender "female".
-     ?artist rdfs:type mo:MusicArtist.
-     ?artist rdfs:label ?name.
+     ?artist mo:origin     "Africa"; 
+             schema:gender "female";
+             rdfs:type     mo:MusicArtist;
+             rdfs:label    ?name.
   }`)
   for(var a of artists){ console.log(a.name) }
 

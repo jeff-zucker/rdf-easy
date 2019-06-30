@@ -7,11 +7,11 @@ class SolidSpark {
     this._auth = auth
   }
 
-  async query(dataUrl,sparqlStr){
+  async query(dataUrl,sparqlStr,contentType){
     sparqlStr = this._prepSparql(dataUrl,sparqlStr)
     return await this._runQuery( dataUrl, sparqlStr, "array" )
   }
-  async value(source,sparql){
+  async value(source,sparql,contentType){
     sparql = this._prepSparql(source,sparql)
     return await this._runQuery( source, sparql, "value" )
   }
