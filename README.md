@@ -10,10 +10,9 @@ there are many possibilities.
 
 Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
 daunting than rdflib and closer to the RDF bone (for the user) than 
-query-ldflex.  If you need really heavy lifting, use rdflib instead
+[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead
 or in addition (see below on reusing the store).  If you prefer Javascript
-objects to SPARQL, use [query-ldflex](https://github.com/solid/query-ldflex)
-instead.
+objects to SPARQL, use query-ldflex instead.
 
 ## Methods (<i>there are only four</i>):
 ```
