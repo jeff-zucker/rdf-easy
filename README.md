@@ -47,16 +47,16 @@ There are four methods:
     <> linkr:acl ?aclDoc.
   }`)
   let agents = await rdf.query( aclDoc, `SELECT ?agentName WHERE { 
-     ?auth acl:mode acl:Write.
-     ?auth acl:agent ?agentName.
+     ?auth acl:mode  acl:Write;
+           acl:agent ?agentName.
   }`)
   for(var a of agents){ console.log(a.agentName) }
 ```
 - **find trusted apps and their modes**
 ```
   let apps = await rdf.query( profile, `SELECT ?appName ?appMode WHERE { 
-     ?app acl:origin ?appName. 
-     ?app acl:mode ?appMode.
+     ?app acl:origin ?appName;
+          acl:mode   ?appMode.
   }`)
   for(var a of apps){ console.log(a.appName,a.appMode) }
 ```
