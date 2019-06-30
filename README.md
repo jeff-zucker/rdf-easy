@@ -135,6 +135,7 @@ may pass an array of URLs all of which will be added to the store.
 ### reusing the store
 
 The rdflib store object is used behind the scenes, but if you need it
-or its methods, you can access it with rdf.store.
+or its methods, you can access it with rdf.store.  It will be loaded
+with whatever you requested in your last value() or query() call.
 
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
