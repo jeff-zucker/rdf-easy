@@ -7,12 +7,12 @@ fetchers, stores, and other complexities are conveniently tucked out of
 sight.
 
 There are four methods:
-
+```
    find a single value in an RDF resource  : rdf.value()
    find multiple values in an RDF resource : rdf.query()
    create an RDF resource                  : rdf.createOrReplace()
    modify an RDF resource                  : rdf.update()
-
+```
 - **invoking & initializing**
 ```
   const auth    = require('solid-auth-cli') // or browser equivalent
