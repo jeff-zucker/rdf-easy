@@ -10,7 +10,7 @@ there are many possibilities.
 
 Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
 daunting than rdflib and closer to the RDF bone (for the user) than 
-[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see "tips for advanced users" below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
+[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see [tips for advanced users](#advanced) below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
 
 ## Methods (<i>there are only four</i>):
 ```
@@ -108,7 +108,7 @@ daunting than rdflib and closer to the RDF bone (for the user) than
       INSERT DATA { <> :about "RDF". }
   `)
 ```
-## Tips for advanced users
+## <a name="advanced">Tips for advanced users</a>
 
 ### quads
 
