@@ -120,7 +120,7 @@ mention that, so as not to confuse beginners.
 Many of the common namespaces (foaf,ldp,etc.) are included by default and
 you do not need to define them in your queries.  If you have a custom 
 namespace, either add it to the SPARQL with a standard PREFIX declaration,
-or use <full-url-of-namespace-and-term> in your SPARQL.
+or use &lt;full-url-of-namespace-and-term&gt; in your SPARQL.
 
 ### working with RDF formats other than Turtle
 
