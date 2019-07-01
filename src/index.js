@@ -7,17 +7,29 @@ class RDFeasy {
     this._auth = auth
   }
 
-  async query(dataUrl,sparqlStr,contentType){
+  async _multiQuery(sources,query){
+    this.store = $rdf.graph()
+    this.fetcher = $rdf.fetcher(this.store,{fetch:this._auth.fetch})
+    for(var source of sources){
+      await this.fetcher.load(source)
+    }
+    return await this.query(null,query)
+  }
+
+  async query(dataUrl,sparqlStr){
     sparqlStr = this._prepSparql(dataUrl,sparqlStr)
+    if(Array.isArray(dataUrl)) { 
+      return await this._multiQuery(dataUrl,sparqlStr) 
+    }
     return await this._runQuery( dataUrl, sparqlStr, "array" )
   }
-  async value(source,sparql,contentType){
+  async value(source,sparql){
     sparql = this._prepSparql(source,sparql)
     return await this._runQuery( source, sparql, "value" )
   }
 
   async _runQuery(dataUrl,sparqlStr,outputFormat){
-    await this._load(dataUrl)
+    if(dataUrl) await this._load(dataUrl)
     let results = await this._execute(sparqlStr)
     if(outputFormat.match(/array/i)){ return results }
     else if(outputFormat.match(/value/i)) {
@@ -29,10 +41,10 @@ class RDFeasy {
   async _execute(sparql){ 
     let self = this
     return new Promise(async(resolve, reject)=>{
-    let preparedQuery = $rdf.SPARQLToQuery(sparql,false,self._store)
+    let preparedQuery = $rdf.SPARQLToQuery(sparql,false,self.store)
     let wanted = preparedQuery.vars
     let resultAry = []
-    self._store.query(preparedQuery, async(results) =>  {
+    self.store.query(preparedQuery, async(results) =>  {
       if(typeof(results)==="undefined") { reject("No results.") }
       let row = await this._rowHandler(wanted,results) 
       if(row) resultAry.push(row)
@@ -59,13 +71,16 @@ class RDFeasy {
   _prepSparql(source,sparql){
     if(!sparql) sparql = "SELECT * WHERE {?subject ?predicate ?object.}"
     sparql=sparql.replace(/\<\>/,"<"+source+">")
-    return `PREFIX : <${source}#>\n` + this._prefixStr + sparql
+//    if(typeof source==="string") {
+      sparql = `PREFIX : <${source}#>\n` + this._prefixStr + sparql
+//    }
+    return sparql
   }
 
   async _load(url){
-    this._store = $rdf.graph()
-    this._fetcher = $rdf.fetcher(this._store,{fetch:this._auth.fetch})
-    await this._fetcher.load(url)
+    this.store = $rdf.graph()
+    this.fetcher = $rdf.fetcher(this.store,{fetch:this._auth.fetch})
+    await this.fetcher.load(url)
   }
 
   async createOrReplace(url,turtle,rdfType="text/turtle"){
@@ -110,7 +125,9 @@ class RDFeasy {
   icalTZ: 'http://www.w3.org/2002/12/cal/icaltzd#', // Beware: not cal:
   ldp: 'http://www.w3.org/ns/ldp#',
   link: 'http://www.w3.org/2007/ont/link#',
+  linkr: 'http://www.iana.org/assignments/link-relations/',
   log: 'http://www.w3.org/2000/10/swap/log#',
+  media: 'http://www.iana.org/assignments/media-types/',
   meeting: 'http://www.w3.org/ns/pim/meeting#',
   mo: 'http://purl.org/ontology/mo/',
   owl: 'http://www.w3.org/2002/07/owl#',
@@ -133,7 +150,6 @@ class RDFeasy {
   vcard: 'http://www.w3.org/2006/vcard/ns#',
   wf: 'http://www.w3.org/2005/01/wf/flow#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',
-  linkr: 'http://www.iana.org/assignments/link-relations/'
 }
   let prefixStr=""
   for(var a in aliases){

@@ -112,6 +112,7 @@ examples below should give you an idea of what RDF-easy can do.
       INSERT DATA { <> :about "RDF". }
   `)
 ```
+
 ## <a name="advanced">Tips for advanced users</a>
 
 ### quads
@@ -131,15 +132,30 @@ or use &lt;full-url-of-namespace-and-term&gt; in your SPARQL.
 If you wish to create resources in n3, RDF/XML, etc. you may pass a
 content-type tag as the third parameter of createOrReplace()
 
+### re-querying the same source
+
+If you want to run additional queries on a data URL you have
+already loaded, you can pass null as the data URL which will
+reuse the store from the previous query or value.
+```javascript
+  let results1 = await rdf.query( dataUrl, sparql1 )
+  let results2 = await rdf.query( null, sparql2 )
+```
+
 ### querying multiple sources at once
 
-Instead of passing a single URL to the query and value methods, you
+Instead of passing a single URL to the query method, you
 may pass an array of URLs all of which will be added to the store.
+The query will be run against all the sources.
+```javascript
+  let results = await rdf.query( [url1,url2,...], sparql )
+```
 
-### reusing the store
+### reusing the store and fetcher
 
-The rdflib store object is used behind the scenes, but if you need it
-or its methods, you can access it with rdf.store.  It will be loaded
-with whatever you requested in your last value() or query() call.
+The rdflib store and fetcher objects are used behind the scenes. If 
+you need them or their methods, you can access them with rdf.store
+and rdf.fetcher.  They will be loaded with whatever you requested 
+in your last value() or query() call.
 
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
