@@ -12,17 +12,6 @@ const newDoc       = account + "/public/test/newDoc.ttl"
 async function main(){
 await auth.login()
 
-  // multiple sources
-  let results = await rdf.query([container,profile],`
-      SELECT  ?o WHERE {
-        ?s ?p ldp:Resource.
-      }
-  `)
-console.log(results)
-   for(var r of results){console.log(r.p)}
-
-return
-
   // log the name of the owner of a profile document
   //
   console.log( 

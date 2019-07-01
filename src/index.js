@@ -71,9 +71,7 @@ class RDFeasy {
   _prepSparql(source,sparql){
     if(!sparql) sparql = "SELECT * WHERE {?subject ?predicate ?object.}"
     sparql=sparql.replace(/\<\>/,"<"+source+">")
-//    if(typeof source==="string") {
-      sparql = `PREFIX : <${source}#>\n` + this._prefixStr + sparql
-//    }
+    sparql = `PREFIX : <${source}#>\n` + this._prefixStr + sparql
     return sparql
   }
 

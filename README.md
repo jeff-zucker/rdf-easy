@@ -112,6 +112,12 @@ examples below should give you an idea of what RDF-easy can do.
       INSERT DATA { <> :about "RDF". }
   `)
 ```
+## working with in-memory and files rather than web resources
+
+If you are working in nodejs using solid-auth-cli, you can use file:// URLs
+to access local files the same way you would with remote files.  You can also
+use app://ls URLs to work entirely in-memory localStorage, e.g. create a 
+Turtle resource and query it without writing anything to disk.
 
 ## <a name="advanced">Tips for advanced users</a>
 
