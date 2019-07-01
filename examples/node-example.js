@@ -10,6 +10,25 @@ const givenUrl     = account + "/public/"
 const newDoc       = account + "/public/test/newDoc.ttl"
 
 async function main(){
+await auth.login()
+//await auth.fetch(newDoc,{method:PUT})
+await rdf.createOrReplace( newDoc, `
+    :A 
+        :inCategory   "C";
+        :someProperty  "D", "E";
+        :otherProperty "F", "G".
+    :B
+        :inCategory   "F".
+`)
+let results = await rdf.query( newDoc, `
+    SELECT ?subject, ?prop ?value WHERE {
+        ?subject :inCategory "C".
+        ?subject ?prop ?value.
+    }
+`)
+for(var r of results){ console.log(r.subject,r.prop,r.value) }
+
+return
 
   // log the name of the owner of a profile document
   //

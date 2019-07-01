@@ -2,8 +2,8 @@
 
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
-Here's how it works :  You create, modify, and query RDF resources using 
-Turtle and SPARQL and get back either a single value or a straightforward 
+Here's how it works :  You create, modify, and query [RDF]() resources using 
+[Turtle]() and [SPARQL]() and get back either a single value or a straight-forward 
 Javascript array of hashes.  You don't need to know much about Turtle and 
 SPARQL for it to be useful for many common tasks. And if you do know them, 
 there are many possibilities.  
