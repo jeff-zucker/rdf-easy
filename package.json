@@ -10,7 +10,7 @@
     "semantic web"
   ],
   "dependencies": {
-    "rdflib": "^0.20.1",
+    "rdflib": "^0.20.1"
   },
   "devDependencies": {
     "concat-stream": "^2.0.0",
