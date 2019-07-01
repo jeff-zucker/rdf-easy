@@ -13,7 +13,8 @@ daunting than rdflib and closer to the RDF bone (for the user) than
 [query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see [tips for advanced users](#advanced) below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
 
 If I get feedback this package is useful, I'll create documentation
-targeted to specific audiences (novices, advanced users).
+targeted to specific audiences (novices, advanced users).  For now, the
+examples below should give you an idea of what RDF-easy can do.
 
 ## Methods (<i>there are only four</i>):
 ```
