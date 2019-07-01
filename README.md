@@ -2,8 +2,8 @@
 
 ## easy & practical access to RDF linked data from Solid pods & other sources
 
-Here's how it works :  You create, modify, and query [RDF]() resources using 
-[Turtle]() and [SPARQL]() and get back either a single value or a straight-forward 
+Here's how it works :  You create, modify, and query [RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) resources using 
+[Turtle](https://linkeddata.github.io/rdflib.js/Documentation/turtle-intro.html) and [SPARQL](https://en.wikipedia.org/wiki/SPARQL) and get back either a single value or a straight-forward 
 Javascript array of hashes.  You don't need to know much about Turtle and 
 SPARQL for it to be useful for many common tasks. And if you do know them, 
 there are many possibilities.  
@@ -11,6 +11,9 @@ there are many possibilities.
 Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
 daunting than rdflib and closer to the RDF bone (for the user) than 
 [query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see [tips for advanced users](#advanced) below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
+
+If I get feedback this package is useful, I'll create documentation
+targeted to specific audiences (novices, advanced users).
 
 ## Methods (<i>there are only four</i>):
 ```
@@ -45,17 +48,17 @@ daunting than rdflib and closer to the RDF bone (for the user) than
   `)
   for(var a of about){ console.log(a.property,a.value) }
 ```
-- **find the URLs and sizes of all files in a container**
+- **find the URLs and sizes of the contents of a container**
 ```javascript
-  let files = await rdf.query( container, `
+  let contents = await rdf.query( container, `
       SELECT ?url ?size WHERE {
           <> ldp:contains ?url. 
           ?url stat:size ?size.
       }
   `)
-  for(var f of files){ console.log(f.url,f.size) }
+  for(var c of contents){ console.log(c.url,c.size) }
 ```
-- **find all agents with write access to a given url**
+- **find all agents with write access to a given URL**
 ```javascript
   // Note : the link header of a document becomes part of its results
   // using the IANA link-relations vocabulary (prefix linkr).
@@ -103,7 +106,7 @@ daunting than rdflib and closer to the RDF bone (for the user) than
 ```
 - **update an RDF document**
 ```javascript
-  await rdf.update( newDoc, `
+  await rdf.update( someDoc, `
       DELETE DATA { <> :about "stuff". }
       INSERT DATA { <> :about "RDF". }
   `)
