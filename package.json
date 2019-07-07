@@ -1,24 +1,22 @@
 {
   "name": "rdf-easy",
-  "version": "0.0.1",
-  "description": "easy & practical access to RDF linked data from Solid pods & other sources",
+  "version": "1.0.0",
+  "description": "easy access to RDF linked data from Javascript",
   "author": "Jeff Zucker",
   "license": "MIT",
   "keywords": [
     "linked data",
     "RDF",
-    "semantic web"
+    "Solid"
   ],
+  "main": "src/index.js",
+  "browser": "dist/rdf-easy-bundle.js",
+  "license": "MIT",
   "dependencies": {
-    "rdflib": "^0.20.1"
+    "@comunica/actor-init-sparql-rdfjs": "^1.8.0",
+    "n3": "^1.1.1"
   },
-  "devDependencies": {
-    "concat-stream": "^2.0.0",
+  "dev-dependencies": {
     "solid-auth-cli": "^1.0.7"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "main": "./src/index.js",
-  "browser": "./dist/rdf-easy.bundle.js"
+  }
 }

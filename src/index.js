@@ -1,89 +1,113 @@
-const $rdf = require('rdflib')
+"use strict"
+const N3 = require('n3')
+const ns = require('solid-namespace')()
+const newEngine   = require('@comunica/actor-init-sparql-rdfjs').newEngine;
 
-class RDFeasy {
+const { DataFactory } = N3;
+const { namedNode, literal, defaultGraph, quad } = DataFactory;
 
-  constructor(auth){
+class RdfQuery {
+
+  constructor(auth) {
+    this._fetch = auth.fetch
+    this.parser = new N3.Parser()
+    this.store   = new N3.Store()
     this._prefixStr = this._getPrefixes()
-    this._auth = auth
+    this.comunica = newEngine();
   }
 
-  async _multiQuery(sources,query){
-    this.store = $rdf.graph()
-    this.fetcher = $rdf.fetcher(this.store,{fetch:this._auth.fetch})
-    for(var source of sources){
-      await this.fetcher.load(source)
-    }
-    return await this.query(null,query)
+  setPrefix(prefix,url){
+    this.prefix[prefix]=url
+  }
+  getPrefix(prefix){
+    return this.prefix[prefix]
   }
 
-  async query(dataUrl,sparqlStr){
-    sparqlStr = this._prepSparql(dataUrl,sparqlStr)
+  async value(dataUrl,sparqlStr){
+    return await this.query(dataUrl,sparqlStr,"want1")
+  }
+
+  async query(dataUrl,sparqlStr,wanted){return new Promise(async(resolve)=>{
+    if(!sparqlStr) sparqlStr = "SELECT * WHERE {?subject ?predicate ?object.}"
     if(Array.isArray(dataUrl)) { 
-      return await this._multiQuery(dataUrl,sparqlStr) 
+      return await this._multiQuery(dataUrl,sparqlStr,wanted) 
     }
-    return await this._runQuery( dataUrl, sparqlStr, "array" )
-  }
-  async value(source,sparql){
-    sparql = this._prepSparql(source,sparql)
-    return await this._runQuery( source, sparql, "value" )
-  }
-
-  async _runQuery(dataUrl,sparqlStr,outputFormat){
-    if(dataUrl) await this._load(dataUrl)
-    let results = await this._execute(sparqlStr)
-    if(outputFormat.match(/array/i)){ return results }
-    else if(outputFormat.match(/value/i)) {
-       let key = ( Object.keys(results[0])[0]  )
-       return( results[0][key] )
+    let store = this.store
+    if(dataUrl){
+      dataUrl = dataUrl.replace(/#[^#]*$/,'')
+      this.store = new N3.Store()
+      store = await this.loadFromUrl(dataUrl)
     }
+    const queryCfg = {
+      sources:[{type:"rdfjsSource",value:this.store}],
+      baseIRI:dataUrl
+    }
+    sparqlStr = `PREFIX : <#>\n` + this._prefixStr + sparqlStr
+    const result   = await this.comunica.query( sparqlStr, queryCfg )
+
+    var allData = []
+    result.bindingsStream.on('data', (data) => {
+      let rec = {}
+      for(var v of result.variables){
+        if(wanted) return resolve(data.get(v).value)
+        rec[ v.replace(/^\?/,'') ] = data.get(v).value
+      }
+      allData.push(rec)
+    });
+    result.bindingsStream.on('end', (data) => {
+      return resolve(allData)
+    })
+   });
   }
 
-  async _execute(sparql){ 
-    let self = this
-    return new Promise(async(resolve, reject)=>{
-    let preparedQuery = $rdf.SPARQLToQuery(sparql,false,self.store)
-    let wanted = preparedQuery.vars
-    let resultAry = []
-    self.store.query(preparedQuery, async(results) =>  {
-      if(typeof(results)==="undefined") { reject("No results.") }
-      let row = await this._rowHandler(wanted,results) 
-      if(row) resultAry.push(row)
-    }, {} , function(){return resolve(resultAry)} )
-  })
-}
+  async loadFromString(string,url){
+    return new Promise( async(resolve)=>{
+      await this._load(string,url)
+      return resolve(this.store)
+    })
+  }
 
-  async _rowHandler(wanted,results){
-    let row = {}
-    for(var r in results){
-      let found = false
-      let got = r.replace(/^\?/,'')
-      if(wanted.length){
-        for(var w in wanted){
-          if(got===wanted[w].label){ found=true; continue }
+  async load(url) {
+    let store = await this.loadFromUrl(url)
+    store.query = this.query
+    return store
+  }
+
+  async loadFromUrl(url) {
+    const res = await this._fetch(url)
+    if (!res.ok) {
+      throw res
+    }
+    const string = await res.text()
+    this.store = await this._load(string, url)
+    return this.store
+  }
+
+  async _load(string,url){
+    return new Promise( async(resolve)=>{
+      let quads =  await this._parse(string,url)
+      this.store.addQuads(quads)
+      return resolve(this.store)
+    })
+  }
+
+  async _parse(string,url){
+    let store =[]
+    const parser = new N3.Parser({ baseIRI: url });
+    return new Promise( async(resolve)=>{
+      parser.parse( string, (err, quad, prefixes) => {
+        if(quad) {
+           store.push(quad)        
         }
-        if(!found) continue
-      } 
-      row[got]=results[r].value
-    }
-    return(row)
-  }
-
-  _prepSparql(source,sparql){
-    if(!sparql) sparql = "SELECT * WHERE {?subject ?predicate ?object.}"
-    sparql=sparql.replace(/\<\>/,"<"+source+">")
-    sparql = `PREFIX : <${source}#>\n` + this._prefixStr + sparql
-    return sparql
-  }
-
-  async _load(url){
-    this.store = $rdf.graph()
-    this.fetcher = $rdf.fetcher(this.store,{fetch:this._auth.fetch})
-    await this.fetcher.load(url)
+        if(err) return resolve(err);
+        resolve(store)
+      })
+    })
   }
 
   async createOrReplace(url,turtle,rdfType="text/turtle"){
     try {
-      await this._auth.fetch(url,{
+      await this._fetch(url,{
          method: "PUT",
            body: turtle,
         headers: {"Content-Type": rdfType}
@@ -95,7 +119,7 @@ class RDFeasy {
 
   async update(url,sparql){
     try {
-      return await this._auth.fetch(url,{
+      return await this._fetch(url,{
         method: 'PATCH',
         headers: { 'Content-Type': 'application/sparql-update' },
         body: sparql
@@ -103,6 +127,15 @@ class RDFeasy {
     } catch (err) {
        throw err
     }
+  }
+
+  async _multiQuery(sources,query){
+    this.store = $rdf.graph()
+    this.fetcher = $rdf.fetcher(this.store,{fetch:this._fetch})
+    for(var source of sources){
+      await this.fetcher.load(source)
+    }
+    return await this.query(null,query)
   }
 
  /**
@@ -158,5 +191,6 @@ class RDFeasy {
 
 }
 
+module.exports = RdfQuery
+// export default RdfQuery
 
-module.exports = RDFeasy

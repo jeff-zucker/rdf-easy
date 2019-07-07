@@ -3,15 +3,21 @@ const RDFeasy = require('../src')
 const rdf = new RDFeasy(auth)
 
 const account      = "https://jeffz.solid.community"
-const profile      = account + "/profile/card"
+const profile      = account + "/profile/card#me"
 const container    = account + "/public/Music/"
 const worldArtists = "file://"+process.cwd()+"/examples/artists.ttl"
 const givenUrl     = account + "/public/"
 const newDoc       = account + "/public/test/newDoc.ttl"
 
 async function main(){
-await auth.login()
 
+  let url    = "app://ls/test"
+  let turtle = `@prefix : <#>.<> :message "hello world".`
+  let sparql = `SELECT ?m {<> :message ?m.}`
+  await rdf.createOrReplace( url, turtle )
+  console.log( await rdf.value(url,sparql ) )
+
+  await auth.login()
   // log the name of the owner of a profile document
   //
   console.log( 
@@ -31,13 +37,13 @@ await auth.login()
   }`)
   for(var f of files){ console.log(f.url,f.size) }
 
-  // log trusted apps and their modes
+  // log all trusted apps with Write permission
   //
-  let apps = await rdf.query( profile, `SELECT ?appName ?appMode WHERE { 
+  let apps = await rdf.query( profile, `SELECT ?appName WHERE { 
      ?app acl:origin ?appName. 
-     ?app acl:mode ?appMode.
+     ?app acl:mode acl:Write.
   }`)
-  for(var a of apps){ console.log(a.appName,a.appMode) }
+  for(var a of apps){ console.log(a.appName) }
 
   // log names of African Women Musicans from a list of world artists
   //

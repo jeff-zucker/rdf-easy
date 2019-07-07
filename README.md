@@ -1,16 +1,37 @@
 # RDF easy
 
-## easy & practical access to RDF linked data from Solid pods & other sources
+## easy Javascript access to RDF from Solid pods & other sources
 
-Here's how it works :  You create, modify, and query [RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) resources using 
-[Turtle](https://linkeddata.github.io/rdflib.js/Documentation/turtle-intro.html) and [SPARQL](https://en.wikipedia.org/wiki/SPARQL) and get back either a single value or a straight-forward 
-Javascript array of hashes.  You don't need to know much about Turtle and 
-SPARQL for it to be useful for many common tasks. And if you do know them, 
-there are many possibilities.  
+RDF-easy is a tool for both novice and advanced developers 
+which provides easy access to
+[RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework)
+data from 
+[Solid]() 
+pods and other sources.
+It lets you create RDF with 
+[Turtle](https://linkeddata.github.io/rdflib.js/Documentation/turtle-intro.html);
+query and update RDF with 
+[SPARQL](https://en.wikipedia.org/wiki/SPARQL)
+, and process query results in 
+straight-forward Javascript arrays of hashes.  Even
+if you don't know much Turtle or SPARQL, it can be a useful tool for many
+common tasks and is a good way to learn them.  And if you do know Turtle and
+SPARQL, RDF-easy provides a simple front-end with one interface, consistent
+query return format, and lets your code remain uncluttered by things like
+named nodes, prefixes, stores, fetchers, updaters, etc which are all used
+(thanks to [N3](https://github.com/rdfjs/N3.js)
+ and [comunica](https://github.com/comunica/comunica)
+) transparently in the background . 
 
-Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). The goal here is to be less
-daunting than rdflib and closer to the RDF bone (for the user) than 
-[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see [tips for advanced users](#advanced) below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
+Since RDF-easy uses the comunica query engine, it supports the full
+SPARQL 1.1 specification, which differentiates it from
+[rdflib](https://github.com/linkeddata/rdflib.js/).
+If you need heavy lifting ,you may be better off using rdflib, but see
+the see [tips for advanced users](#advanced) below.
+If you prefer working with Javascript Objects and JSON-LD over Turtle
+and SPARQL, you should use 
+[query-ldflex](https://github.com/solid/query-ldflex) instead.
+
 
 If I get feedback this package is useful, I'll create documentation
 targeted to specific audiences (novices, advanced users).  For now, the
@@ -133,11 +154,6 @@ you do not need to define them in your queries.  If you have a custom
 namespace, either add it to the SPARQL with a standard PREFIX declaration,
 or use &lt;full-url-of-namespace-and-term&gt; in your SPARQL.
 
-### working with RDF formats other than Turtle
-
-If you wish to create resources in n3, RDF/XML, etc. you may pass a
-content-type tag as the third parameter of createOrReplace()
-
 ### re-querying the same source
 
 If you want to run additional queries on a data URL you have
@@ -156,12 +172,4 @@ The query will be run against all the sources.
 ```javascript
   let results = await rdf.query( [url1,url2,...], sparql )
 ```
-
-### reusing the store and fetcher
-
-The rdflib store and fetcher objects are used behind the scenes. If 
-you need them or their methods, you can access them with rdf.store
-and rdf.fetcher.  They will be loaded with whatever you requested 
-in your last value() or query() call.
-
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license
