@@ -18,24 +18,12 @@ if you don't know much Turtle or SPARQL, it can be a useful tool for many
 common tasks and is a good way to learn them.  And if you do know Turtle and
 SPARQL, RDF-easy provides a simple front-end with one interface, consistent
 query return format, and lets your code remain uncluttered by things like
-named nodes, prefixes, stores, fetchers, updaters, etc which are all used
-(thanks to [N3](https://github.com/rdfjs/N3.js)
- and [comunica](https://github.com/comunica/comunica)
-) transparently in the background . 
+named nodes, prefixes, stores, fetchers, updaters, etc which are all handled
+transparently in the background . 
 
-Since RDF-easy uses the comunica query engine, it supports the full
-SPARQL 1.1 specification, which differentiates it from
-[rdflib](https://github.com/linkeddata/rdflib.js/).
-If you need heavy lifting ,you may be better off using rdflib, but see
-the see [tips for advanced users](#advanced) below.
-If you prefer working with Javascript Objects and JSON-LD over Turtle
-and SPARQL, you should use 
-[query-ldflex](https://github.com/solid/query-ldflex) instead.
-
-
-If I get feedback this package is useful, I'll create documentation
-targeted to specific audiences (novices, advanced users).  For now, the
-examples below should give you an idea of what RDF-easy can do.
+Under the hood, is the ever-magnificent [rdflib](https://github.com/linkeddata/rdflib.js/). RDF-easy adds a mere 5k to the browser's load once rdflib is loaded. The goal here is to be less
+daunting than rdflib and closer to the RDF bone (for the user) than 
+[query-ldflex](https://github.com/solid/query-ldflex).  If you need really heavy lifting, use rdflib instead or in addition (see [tips for advanced users](#advanced) below).  If you prefer Javascript objects to SPARQL, use query-ldflex instead.
 
 ## Methods (<i>there are only four</i>):
 ```
@@ -154,6 +142,11 @@ you do not need to define them in your queries.  If you have a custom
 namespace, either add it to the SPARQL with a standard PREFIX declaration,
 or use &lt;full-url-of-namespace-and-term&gt; in your SPARQL.
 
+### working with RDF formats other than Turtle
+
+If you wish to create resources in n3, RDF/XML, etc. you may pass a
+content-type tag as the third parameter of createOrReplace()
+
 ### re-querying the same source
 
 If you want to run additional queries on a data URL you have
@@ -172,4 +165,12 @@ The query will be run against all the sources.
 ```javascript
   let results = await rdf.query( [url1,url2,...], sparql )
 ```
+
+### reusing the store and fetcher
+
+The rdflib store and fetcher objects are used behind the scenes. If 
+you need them or their methods, you can access them with rdf.store
+and rdf.fetcher.  They will be loaded with whatever you requested 
+in your last value() or query() call.
+
 &copy; 2019, Jeff Zucker, may be freely distributed with an MIT license

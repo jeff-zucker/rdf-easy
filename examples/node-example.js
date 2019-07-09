@@ -1,22 +1,22 @@
 const auth=require('solid-auth-cli')
-const RDFeasy = require('../src')
+const RDFeasy = require('../')
 const rdf = new RDFeasy(auth)
 
 const account      = "https://jeffz.solid.community"
-const profile      = account + "/profile/card#me"
+const profile      = account + "/profile/card"
 const container    = account + "/public/Music/"
 const worldArtists = "file://"+process.cwd()+"/examples/artists.ttl"
 const givenUrl     = account + "/public/"
 const newDoc       = account + "/public/test/newDoc.ttl"
 
 async function main(){
-
+/*
   let url    = "app://ls/test"
   let turtle = `@prefix : <#>.<> :message "hello world".`
   let sparql = `SELECT ?m {<> :message ?m.}`
   await rdf.createOrReplace( url, turtle )
   console.log( await rdf.value(url,sparql ) )
-
+*/
   await auth.login()
   // log the name of the owner of a profile document
   //
